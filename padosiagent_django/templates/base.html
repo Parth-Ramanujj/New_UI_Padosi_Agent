@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% comment %}
+PadosiAgent — Base Template
+Converted from: resources/views/layouts/app.blade.php
+
+Laravel Blade directives → Django template equivalents:
+    @extends('layouts.app')         → 
+    @section('content')             → {% block content %}
+    @push('styles')                 → {% block extra_css %}
+    @push('scripts')                → {% block extra_js %}
+    @include('layouts.header')      → {% include 'partials/header.html' %}
+    {{ $variable }}                 → {{ variable }}
+    {{ asset('path') }}             → {% static 'path' %}
+    @csrf                           → {% csrf_token %}
+    @if / @foreach                  → {% if %} / {% for %}
+{% endcomment %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}PadosiAgent{% endblock %}</title>
+
+    <!-- Fonts (same as Laravel app) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome (same as Laravel app) -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+    <!-- Base styles -->
+    <link href="{% static 'css/style.css' %}" rel="stylesheet">
+
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    {% block content %}{% endblock %}
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

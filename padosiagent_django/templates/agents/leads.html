@@ -1,0 +1,134 @@
+{% extends 'layouts/app.html' %}
+{% load static %}
+
+{% block title %}My Leads - PadosiAgent{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4" style="background-color: #f8fafc; min-height: 100vh;">
+    <div class="container">
+        <!-- Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="mb-0 fw-bold" style="color: #1e293b;">
+                <i class="fas fa-users me-2 text-primary"></i>My Leads
+            </h2>
+            <a href="{% url 'agents:dashboard' %}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+            </a>
+        </div>
+
+        <!-- Filters -->
+        <div class="card border-0 shadow-sm rounded-4 mb-4">
+            <div class="card-body p-0">
+                <ul class="nav nav-tabs nav-fill border-0 m-0" style="background: #fff; border-radius: 1rem;">
+                    <li class="nav-item">
+                        <a class="nav-link {% if not status_filter %}active{% endif %} py-3 text-dark fw-semibold" href="?status=">
+                            All Leads <span class="badge bg-secondary ms-1">{{ status_counts.all }}</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if status_filter == 'new' %}active{% endif %} py-3 text-primary fw-semibold" href="?status=new">
+                            New <span class="badge bg-primary ms-1">{{ status_counts.new }}</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if status_filter == 'contacted' %}active{% endif %} py-3 text-info fw-semibold" href="?status=contacted">
+                            Contacted <span class="badge bg-info ms-1">{{ status_counts.contacted }}</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if status_filter == 'follow_up' %}active{% endif %} py-3 text-warning fw-semibold" href="?status=follow_up">
+                            Follow-up <span class="badge bg-warning ms-1">{{ status_counts.follow_up }}</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if status_filter == 'closed' %}active{% endif %} py-3 text-success fw-semibold" href="?status=closed">
+                            Closed <span class="badge bg-success ms-1">{{ status_counts.closed }}</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Leads List -->
+        <div class="card border-0 shadow-sm rounded-4">
+            <div class="card-body p-0">
+                {% if leads %}
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="px-4 py-3">Customer</th>
+                                <th class="py-3">Contact</th>
+                                <th class="py-3">Type</th>
+                                <th class="py-3">Status</th>
+                                <th class="py-3">Date</th>
+                                <th class="px-4 py-3 text-end">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for lead in leads %}
+                            <tr>
+                                <td class="px-4 py-3 fw-medium">
+                                    {{ lead.customer_name|default:'Guest' }}<br>
+                                    <small class="text-muted"><i class="fas fa-map-marker-alt me-1"></i>{{ lead.customer_pincode|default:'No Pincode' }}</small>
+                                </td>
+                                <td class="py-3">
+                                    {{ lead.customer_mobile|default:'-' }}<br>
+                                    <small class="text-muted">{{ lead.customer_email|default:'-' }}</small>
+                                </td>
+                                <td class="py-3" style="text-transform: capitalize;">{{ lead.interaction_type|replace:"_":" " }}</td>
+                                <td class="py-3">
+                                    {% if lead.lead_status == 'new' %}
+                                        <span class="badge bg-primary rounded-pill px-3 py-2">New</span>
+                                    {% elif lead.lead_status == 'contacted' %}
+                                        <span class="badge bg-info rounded-pill px-3 py-2">Contacted</span>
+                                    {% elif lead.lead_status == 'follow_up' %}
+                                        <span class="badge bg-warning text-dark rounded-pill px-3 py-2">Follow-up</span>
+                                    {% elif lead.lead_status == 'closed' %}
+                                        <span class="badge bg-success rounded-pill px-3 py-2">Closed</span>
+                                    {% endif %}
+                                </td>
+                                <td class="py-3 text-muted small">{{ lead.created_at|date:"d M Y" }}</td>
+                                <td class="px-4 py-3 text-end">
+                                    <a href="{% url 'agents:lead_detail' lead.id %}" class="btn btn-sm btn-outline-primary rounded-pill">
+                                        View Details
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="p-5 text-center">
+                    <div class="mb-3">
+                        <i class="fas fa-inbox fa-3x text-muted opacity-50"></i>
+                    </div>
+                    <h5 class="fw-bold text-muted">No leads found</h5>
+                    <p class="text-muted mb-0">You don't have any leads in this category yet.</p>
+                </div>
+                {% endif %}
+            </div>
+            
+            <!-- Pagination -->
+            {% if page_obj.has_other_pages %}
+            <div class="card-footer bg-white border-top-0 py-3">
+                <nav>
+                    <ul class="pagination justify-content-center mb-0">
+                        {% if page_obj.has_previous %}
+                            <li class="page-item"><a class="page-link" href="?status={{ status_filter }}&page={{ page_obj.previous_page_number }}">Previous</a></li>
+                        {% endif %}
+                        
+                        <li class="page-item active"><span class="page-link">{{ page_obj.number }}</span></li>
+                        
+                        {% if page_obj.has_next %}
+                            <li class="page-item"><a class="page-link" href="?status={{ status_filter }}&page={{ page_obj.next_page_number }}">Next</a></li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

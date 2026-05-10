@@ -1,0 +1,1848 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="zxx">
+
+<head>
+    <!-- <title>Family Insurance | Insurerity</title> -->
+    <title>Expert & Trusted Insurance Agent in your Padosi</title>
+    <!-- /SEO Ultimate -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
+    <meta charset="utf-8">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-TileImage" content="/ms-icon-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="csrf-token" content="{{ csrf_token }}">
+      {% if '/agent' in request.path %}
+     <link rel="manifest" href="/manifest-v5.webmanifest">
+    <link rel="apple-touch-icon" href="/pwa/pwa-192.png?v=4">
+        {% endif %}
+    <link rel="icon" type="image/png" sizes="96x96" href="{% static 'img/logo-icon.png' %}">
+    <!-- Latest compiled and minified CSS -->
+    <link href="{% static 'bootstrap/bootstrap.min.css' %}" rel="stylesheet">
+    <!-- Font Awesome link -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Animate.css -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <!-- StyleSheet link CSS -->
+    <link href="{% static 'css/style.css' %}?v=1" rel="stylesheet" type="text/css">
+    <link href="{% static 'css/custome.css' %}?v=1" rel="stylesheet" type="text/css">
+    <link href="{% static 'css/responsive.css' %}?v=1" rel="stylesheet" type="text/css">
+    <link href="{% static 'css/contact-form-success.css' %}?v=1" rel="stylesheet" type="text/css">
+    <link href="{% static 'css/owl.carousel.min.css' %}?v=1" rel="stylesheet" type="text/css">
+    <link href="{% static 'css/owl.theme.default.min.css' %}?v=1" rel="stylesheet" type="text/css">
+    <link href="{% static 'css/magnific-popup.css' %}?v=1" rel="stylesheet" type="text/css">
+    <link href="{% static 'css/aos.css' %}?v=2.3.4" rel="stylesheet" type="text/css">
+    <!-- Profile Page Specific (moved to global head for smooth transitions) -->
+    <link rel="stylesheet" href="{% static 'css/agent-profile-view.css' %}?v=1">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <!-- Core Libraries -->
+    <script src="{% static 'js/jquery-3.7.1.min.js' %}"></script>
+    <script src="{% static 'js/popper.min.js' %}"></script>
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'js/htmx.min.js' %}"></script>
+    <script src="{% static 'js/owl.carousel.js' %}?v=1"></script>
+    <script src="{% static 'js/carousel.js' %}?v=1"></script>
+
+
+    <!-- PWA ENFORCEMENT SCRIPT -->
+      <!-- PWA ENFORCEMENT SCRIPT -->
+    <script>
+        (function() {
+            const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+            const isSourcePwa = new URLSearchParams(window.location.search).get('source') === 'pwa';
+            
+            if (isStandalone || isSourcePwa || sessionStorage.getItem('is_pwa_mode') === 'true') {
+                sessionStorage.setItem('is_pwa_mode', 'true');
+                document.documentElement.classList.add('pwa-app-mode');
+                
+                const allowedPrefixes = [
+                    '/agent-login',
+                    '/agent-registration',
+                    '/agent',
+                    '/chooseplan',
+                    '/auth',
+                    '/password',
+                    '/forgot-password',
+                    '/reset-password',
+                    '/payment-',
+                    '/profile'
+                ];
+                
+                const enforcePath = () => {
+                    const currentPath = window.location.pathname;
+                    let isAllowed = false;
+                    
+                    for (let prefix of allowedPrefixes) {
+                        if (currentPath === prefix || currentPath.startsWith(prefix + '/')) {
+                            isAllowed = true;
+                            break;
+                        }
+                    }
+                    
+                    if (!isAllowed && currentPath !== '/logout') {
+                        {% if user.is_authenticated and user.role == 'agent' %}
+                            window.location.replace('/agent/dashboard');
+                        {% else %}
+                            window.location.replace('/agent-login?source=pwa');
+                        {% endif %}
+                    }
+                };
+                
+                // Run on initial load
+                enforcePath();
+                
+                // Absolute URL of home to match against
+                const homeUrl = "/";
+                const homeUrlWithSlash = homeUrl + "/";
+                
+                // Function to redirect properly
+                const doPwaRedirect = () => {
+                    {% if user.is_authenticated and user.role == 'agent' %}
+                        window.location.replace('/agent/dashboard');
+                    {% else %}
+                        window.location.replace('/agent-login?source=pwa');
+                    {% endif %}
+                };
+                
+                // Capture all clicks and stop them if pointing to Home
+                document.addEventListener('click', function(e) {
+                    const link = e.target.closest('a');
+                    if (link) {
+                        const href = link.getAttribute('href');
+                        if (href === '/' || href === homeUrl || href === homeUrlWithSlash) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            doPwaRedirect();
+                        }
+                    }
+                }, true);
+                
+                // Intercept HTMX requests to Home
+                document.addEventListener('htmx:beforeRequest', function(evt) {
+                    if (evt.detail.path === '/' || evt.detail.path === homeUrl || evt.detail.path === homeUrlWithSlash) {
+                        evt.preventDefault();
+                        doPwaRedirect();
+                    }
+                });
+
+                // Fix logo and navigational links inside the PWA Mode
+                const fixPwaLinks = () => {
+                    document.querySelectorAll('a').forEach(link => {
+                        const href = link.getAttribute('href');
+                        if (href === '/' || href === homeUrl || href === homeUrlWithSlash) {
+                            {% if user.is_authenticated and user.role == 'agent' %}
+                                link.setAttribute('href', '/agent/dashboard');
+                            {% else %}
+                                link.setAttribute('href', '/agent-login?source=pwa');
+                            {% endif %}
+                        }
+                    });
+                };
+                
+                document.addEventListener('DOMContentLoaded', fixPwaLinks);
+                document.addEventListener('htmx:afterSwap', function() {
+                    enforcePath(); // Re-verify on HTMX load just in case
+                    fixPwaLinks();
+                });
+            }
+        })();
+    </script>
+    <style>
+        /* PWA Mode Adjustments */
+        html.pwa-app-mode .footer-con,
+          html.pwa-app-mode .top-bar-con,
+        html.pwa-app-mode .navbar-toggler {
+            display: none !important;
+        }
+          {% if not user.is_authenticated or user.role != 'agent' %}
+        html.pwa-app-mode .navbar-toggler {
+            display: none !important;
+        }
+        {% endif %}
+        html.pwa-app-mode .navbar-nav .nav-item:not(.d-lg-none) {
+            display: none !important;
+        }
+        /* Mobile menu specific hides */
+        html.pwa-app-mode .mobile-nav-collapse .nav-item > a[href*="/about"],
+        html.pwa-app-mode .mobile-nav-collapse .nav-item > a[href*="/contact"],
+        html.pwa-app-mode .mobile-nav-collapse .nav-item > a[href*="/faq"],
+        html.pwa-app-mode .mobile-nav-collapse .nav-item > a[href*="/find-agents"],
+        html.pwa-app-mode .mobile-nav-collapse .nav-item > a[href="/"] {
+            display: none !important;
+        }
+        html.pwa-app-mode .header-right-btns > a.contact_us:not(.dropdown-toggle) {
+            display: none !important;
+        }
+        html.pwa-app-mode .header-right-btns .dropdown-menu > a[href*="/find-agents"],
+        html.pwa-app-mode .header-right-btns .dropdown-menu > a[href="/"] {
+            display: none !important;
+        }
+    </style>
+
+
+    
+    <style>
+        .swal2-backdrop-show {
+            backdrop-filter: blur(8px) !important;
+            -webkit-backdrop-filter: blur(8px) !important;
+        }
+
+        [data-aos] {
+            opacity: 1 !important;
+            transform: none !important;
+            visibility: visible !important;
+        }
+
+        .aos-init [data-aos] {
+            opacity: inherit;
+            transform: inherit;
+            visibility: inherit;
+        }
+
+        @media screen and (min-width: 992px) {
+            .banner-con .banner_content {
+                padding-top: 100px !important;
+            }
+        }
+
+        @media screen and (max-width: 991px) {
+            .banner-con .banner_content {
+                padding: 40px 20px !important;
+            }
+            .banner-con .banner_content h1:first-child {
+                margin-bottom: 5px !important;
+                line-height: 1.2 !important;
+            }
+            .banner-con .banner_content h1.text-size-16 {
+                margin-bottom: 10px !important;
+            }
+            .banner-con .banner_content p {
+                margin-bottom: 15px !important;
+                font-size: 16px !important;
+                line-height: 1.4 !important;
+            }
+        }
+
+        .banner-con .owl-carousel,
+        .banner-con .owl-carousel .owl-stage-outer,
+        .banner-con .owl-carousel .owl-item {
+            overflow: hidden !important;
+        }
+
+        .banner-con .row[class*="-banner-outer"] {
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+        }
+
+        .banner-top-text-block {
+            z-index: 10 !important;
+            pointer-events: none;
+        }
+
+        .header {
+            z-index: 1050 !important;
+        }
+        .navbar-collapse {
+            z-index: 1060 !important;
+        }
+        .banner-top-text-box {
+            pointer-events: auto;
+        }
+
+        /* Guest Gate Popup Styles (Same to Same) */
+        .swal2-container .swal2-popup.guest-gate-popup {
+            width: min(430px, 92vw) !important;
+            border-radius: 20px;
+            padding: 28px 24px 20px !important;
+            box-shadow: 0 24px 60px rgba(15, 23, 42, 0.28);
+            border: 1px solid #dbeafe;
+            background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+            overflow: hidden;
+        }
+
+        .swal2-container .swal2-popup.guest-gate-popup .swal2-html-container {
+            margin: 0 0 4px;
+            padding: 0 !important;
+        }
+
+        .swal2-container .swal2-popup.guest-gate-popup .swal2-actions {
+            margin: 12px 0 0 0 !important;
+            padding: 0 !important;
+            width: 100%;
+        }
+
+        .swal2-container .swal2-popup.guest-gate-popup .swal2-confirm {
+            width: 100%;
+            border-radius: 12px !important;
+            height: 48px;
+            font-weight: 700 !important;
+            font-size: 16px !important;
+            letter-spacing: 0.3px;
+            background: linear-gradient(135deg, #1d4ed8 0%, #0ea5e9 100%) !important;
+            box-shadow: 0 6px 20px rgba(29, 78, 216, 0.3);
+            border: none !important;
+            transition: all 0.3s ease;
+        }
+
+        .swal2-container .swal2-popup.guest-gate-popup .swal2-confirm:hover {
+            box-shadow: 0 8px 25px rgba(29, 78, 216, 0.4);
+            transform: translateY(-1px);
+        }
+
+        .guest-gate-form {
+            text-align: left;
+        }
+
+        .guest-gate-brand {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 6px;
+        }
+
+        .guest-gate-brand img {
+            width: 110px;
+            height: auto;
+        }
+
+        .guest-gate-heading {
+            font-weight: 800;
+            color: #1e293b;
+            text-align: center;
+            margin: 0 0 4px 0;
+            font-size: 26px;
+            line-height: 1.2;
+        }
+
+        .guest-gate-subtext {
+            color: #2563eb;
+            font-style: italic;
+            font-weight: 600;
+            font-size: 15px;
+            text-align: center;
+            margin-bottom: 16px;
+            line-height: 1.4;
+        }
+
+        .guest-gate-group {
+            margin-bottom: 12px;
+        }
+
+        .guest-gate-label {
+            font-size: 13px;
+            font-weight: 700;
+            color: #334155;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .guest-gate-input,
+        .guest-gate-prefix,
+        .guest-gate-mobile {
+            border: 1.5px solid #e2e8f0 !important;
+            background: #f8fafc !important;
+            min-height: 42px;
+            font-size: 14px;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+        }
+
+        .guest-gate-input:focus,
+        .guest-gate-mobile:focus {
+            border-color: #2563eb !important;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1) !important;
+            background: #ffffff !important;
+        }
+
+        .guest-gate-input {
+            border-radius: 10px !important;
+            padding: 10px 14px !important;
+            width: 100%;
+        }
+
+        .guest-gate-mobile-wrap {
+            display: flex;
+            gap: 0;
+        }
+
+        .guest-gate-prefix {
+            border-right: 0 !important;
+            border-radius: 10px 0 0 10px;
+            padding: 10px 12px;
+            color: #64748b;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            background: #f1f5f9 !important;
+        }
+
+        .guest-gate-mobile {
+            border-radius: 0 10px 10px 0 !important;
+            padding: 10px 14px !important;
+            flex: 1;
+            width: 100%;
+        }
+
+        @media (max-width: 576px) {
+            .swal2-container .swal2-popup.guest-gate-popup {
+                width: min(360px, 92vw) !important;
+                padding: 22px 18px 16px !important;
+            }
+            .guest-gate-heading { font-size: 20px; }
+            .guest-gate-subtext { font-size: 13px; margin-bottom: 12px; }
+            .guest-gate-group { margin-bottom: 8px !important; }
+            .guest-gate-input, .guest-gate-prefix, .guest-gate-mobile { min-height: 38px !important; font-size: 13px !important; }
+            .guest-gate-prefix { padding: 8px 10px !important; }
+            .guest-gate-mobile, .guest-gate-input { padding: 8px 12px !important; }
+            .swal2-container .swal2-popup.guest-gate-popup .swal2-confirm { height: 42px !important; font-size: 15px !important; }
+        }
+
+        /* Padosi Guest Popup (Connect with Agent) */
+        .swal2-container .swal2-popup.padosi-guest-popup {
+            width: min(500px, 94vw) !important;
+            border-radius: 24px;
+            padding: 24px 30px !important;
+            box-shadow: 0 25px 80px rgba(15, 23, 42, 0.3);
+            border: 1px solid #e2e8f0;
+            background: #ffffff;
+        }
+        .swal2-container .swal2-popup.padosi-guest-popup .swal2-title {
+            padding: 0 !important;
+            margin: 0 0 16px 0 !important;
+        }
+        .swal2-container .swal2-popup.padosi-guest-popup .swal2-html-container {
+            margin: 0 !important;
+            padding: 0 !important;
+            overflow: visible !important;
+        }
+        .padosi-popup-form { text-align: left; }
+        .padosi-popup-brand { display: flex; flex-direction: column; align-items: center; margin-bottom: 12px; }
+        .padosi-popup-brand img { width: 100px; height: auto; }
+        .padosi-popup-brand-text { font-size: 12px; font-weight: 700; color: #0f3a66; margin-top: 4px; }
+        
+        .padosi-popup-title { font-size: 24px; font-weight: 800; color: #1e293b; text-align: center; margin-bottom: 2px; }
+        .padosi-popup-subtext { font-size: 14px; color: #64748b; text-align: center; margin-bottom: 20px; }
+
+        .padosi-popup-group { margin-bottom: 15px; }
+        .padosi-popup-label { font-size: 13px; font-weight: 700; color: #1e293b; display: block; margin-bottom: 5px; }
+        .padosi-popup-input { 
+            width: 100%; border-radius: 12px !important; border: 1.5px solid #e2e8f0 !important;
+            padding: 10px 14px !important; font-size: 15px !important; background: #f8fafc !important;
+            transition: all 0.2s ease;
+        }
+        .padosi-popup-input:focus { border-color: #0d9488 !important; background: #fff !important; box-shadow: 0 0 0 4px rgba(13, 148, 136, 0.1) !important; }
+        
+        .swal2-container .swal2-popup.padosi-guest-popup .swal2-actions { margin-top: 8px !important; width: 100%; gap: 10px; }
+        .swal2-container .swal2-popup.padosi-guest-popup .swal2-confirm {
+            flex: 1; border-radius: 10px !important; height: 46px; font-weight: 700 !important;
+            background: #0d9488 !important; box-shadow: 0 4px 12px rgba(13, 148, 136, 0.2) !important;
+        }
+        .swal2-container .swal2-popup.padosi-guest-popup .swal2-cancel {
+            flex: 1; border-radius: 10px !important; height: 46px; font-weight: 600 !important;
+            background: #f1f5f9 !important; color: #475569 !important;
+        }
+
+        @media (max-width: 576px) {
+            .swal2-container .swal2-popup.padosi-guest-popup {
+                padding: 16px 16px 10px !important;
+                width: min(340px, 92vw) !important;
+            }
+            .padosi-popup-title { font-size: 16px; margin-bottom: 2px !important; }
+            .padosi-popup-subtext { font-size: 11px; margin-bottom: 8px; }
+            .padosi-popup-brand { margin-bottom: 8px !important; }
+            .padosi-popup-brand img { width: 70px !important; }
+            .padosi-popup-group { margin-bottom: 6px !important; }
+            .padosi-popup-input { padding: 7px 10px !important; font-size: 13px !important; }
+            .swal2-container .swal2-popup.padosi-guest-popup .swal2-actions { margin-top: 2px !important; }
+            .swal2-container .swal2-popup.padosi-guest-popup .swal2-confirm,
+            .swal2-container .swal2-popup.padosi-guest-popup .swal2-cancel { height: 40px !important; font-size: 14px !important; }
+        }
+        @media (max-width: 576px) {
+            .swal2-container .swal2-popup.guest-gate-popup {
+                padding: 20px 16px 16px !important;
+                border-radius: 16px;
+            }
+            .guest-gate-brand img { width: 90px; }
+            .guest-gate-heading { font-size: 22px; margin-bottom: 4px; }
+            .guest-gate-subtext { font-size: 13px; }
+        }
+    </style>
+    {% block extra_meta %}{% endblock %}
+</head>
+
+<body hx-boost="true" hx-select="#app-content" hx-target="#app-content">
+    <div id="app-content">
+        {% block extra_css %}{% endblock %}
+        {% block content %}{% endblock %}
+        {% block extra_js %}{% endblock %}
+
+        {% if messages %}
+            <script>
+                $(document).ready(function() {
+                    Swal.fire({
+                        title: '<h3 style="color: #273c8e; margin-top: 10px;">Welcome Back!</h3>',
+                        html: '<h5 style="color: #64748b; font-size: 16px; margin-top: 10px;">Great to see you again, <br><b style="color: #1a1a1a; font-size: 20px;">{{ user.fullname }}</b></h5>',
+                        icon: 'success',
+                        iconColor: '#06A441',
+                        timer: 3500,
+                        showConfirmButton: false,
+                        padding: '2.5rem',
+                        borderRadius: '20px',
+                        showClass: {
+                            popup: 'animate__animated animate__fadeInDown'
+                        },
+                        hideClass: {
+                            popup: 'animate__animated animate__fadeOutUp'
+                        },
+                        backdrop: `rgba(0,0,0,0.6)`
+                    });
+                });
+            </script>
+        {% endif %}
+
+        {% if not user.is_authenticated or user.role != 'agent' %}
+            {% include 'layouts/footer.html' %}
+        {% endif %}
+        
+        <script>
+            // Deep check to prevent double footer rendering which sometimes happens due to layout inheritance issues
+            document.addEventListener('DOMContentLoaded', function() {
+                const footers = document.querySelectorAll('.footer-con');
+                if (footers.length > 1) {
+                    // Remove all but the last one
+                    for (let i = 0; i < footers.length - 1; i++) {
+                        footers[i].remove();
+                    }
+                }
+            });
+            // Also for HTMX
+            document.addEventListener('htmx:afterSettle', function() {
+                 const footers = document.querySelectorAll('.footer-con');
+                if (footers.length > 1) {
+                    for (let i = 0; i < footers.length - 1; i++) {
+                        footers[i].remove();
+                    }
+                }
+            });
+        </script>
+   
+
+    {% if user.is_authenticated and user.role == 'agent' %}
+    <nav id="pwa-bottom-nav" aria-label="Agent Navigation">
+        <a href="{% url 'agents:dashboard' %}"
+           class="pwa-nav-item"
+           data-path="/agent/dashboard"
+           id="pwa-nav-dashboard">
+            <i class="fas fa-tachometer-alt"></i>
+            <span>Dashboard</span>
+        </a>
+        <a href="{% url 'agents:edit_profile' %}"
+           class="pwa-nav-item"
+           data-path="/agent/edit-profile"
+           id="pwa-nav-edit">
+            <i class="fas fa-user-edit"></i>
+            <span>Edit Profile</span>
+        </a>
+        <a href="{% url 'agents:show_profile' slug=agent.profile.slug %}"
+           class="pwa-nav-item"
+           data-path="/profile"
+           id="pwa-nav-view">
+            <i class="fas fa-eye"></i>
+            <span>My Profile</span>
+        </a>
+        <form action="{% url 'accounts:logout' %}" method="POST"
+              id="pwa-logout-nav-form" hx-boost="false"
+              class="pwa-nav-item-form">
+            {% csrf_token %}
+            <button type="submit"
+                    class="pwa-nav-item pwa-nav-logout"
+                    id="pwa-nav-signout">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Sign Out</span>
+            </button>
+        </form>
+    </nav>
+
+    <style>
+    /* ================================================
+       PWA Agent Bottom Navigation Bar — Persistent
+       ================================================ */
+    #pwa-bottom-nav {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 9999;
+        background: #ffffff;
+        border-top: 2px solid #e2e8f0;
+        display: flex;
+        align-items: stretch;
+        height: 64px;
+        box-shadow: 0 -4px 24px rgba(0,0,0,0.12);
+        padding-bottom: env(safe-area-inset-bottom, 0px);
+    }
+    .pwa-nav-item,
+    .pwa-nav-item-form {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 3px;
+        color: #94a3b8;
+        font-size: 11px;
+        font-weight: 600;
+        text-decoration: none !important;
+        border: none;
+        background: none;
+        cursor: pointer;
+        padding: 8px 4px;
+        transition: color 0.18s ease, background 0.18s ease;
+        letter-spacing: 0.01em;
+        position: relative;
+        -webkit-tap-highlight-color: transparent;
+    }
+    .pwa-nav-item-form { padding: 0; }
+    .pwa-nav-item i {
+        font-size: 20px;
+        line-height: 1;
+        display: block;
+    }
+    .pwa-nav-item span {
+        line-height: 1;
+        margin-top: 2px;
+        display: block;
+    }
+    .pwa-nav-item:hover,
+    .pwa-nav-item:focus {
+        color: #0f766e;
+        text-decoration: none;
+        background: #f0fdf9;
+        outline: none;
+    }
+    .pwa-nav-item.active {
+        color: #0d9488;
+    }
+    .pwa-nav-item.active i {
+        transform: scale(1.12);
+    }
+    .pwa-nav-item.active::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 15%;
+        right: 15%;
+        height: 3px;
+        background: linear-gradient(90deg, #0d9488, #0f766e);
+        border-radius: 0 0 6px 6px;
+    }
+    .pwa-nav-logout {
+        color: #ef4444 !important;
+        width: 100%;
+        height: 100%;
+    }
+    .pwa-nav-logout:hover,
+    .pwa-nav-logout:focus {
+        color: #dc2626 !important;
+        background: #fff5f5;
+    }
+    /* Pad all agent pages so content clears the nav bar */
+    body.agent-pwa-active .agent-dashboard-wrapper,
+    body.agent-pwa-active main,
+    body.agent-pwa-active .edit-profile-container,
+    body.agent-pwa-active .agent-profile-view-wrapper,
+    body.agent-pwa-active #app-content > div:first-child {
+        padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px)) !important;
+    }
+    /* Hide on desktop */
+    @media (min-width: 992px) {
+        #pwa-bottom-nav { display: none !important; }
+        body.agent-pwa-active .agent-dashboard-wrapper,
+        body.agent-pwa-active main,
+        body.agent-pwa-active .edit-profile-container,
+        body.agent-pwa-active .agent-profile-view-wrapper {
+            padding-bottom: 0 !important;
+        }
+    }
+    </style>
+
+    <script>
+    (function() {
+        var nav = document.getElementById('pwa-bottom-nav');
+        if (!nav) return;
+
+        function updateActiveNav() {
+            var path = window.location.pathname;
+            var items = nav.querySelectorAll('.pwa-nav-item[data-path]');
+            items.forEach(function(item) {
+                var dp = item.getAttribute('data-path');
+                var isActive = dp && (path === dp || path.startsWith(dp + '/') || path.startsWith(dp));
+                item.classList.toggle('active', !!isActive);
+            });
+            // Add body class so padding CSS applies
+            document.body.classList.add('agent-pwa-active');
+        }
+
+        // Run immediately
+        updateActiveNav();
+
+        // Re-run on every HTMX swap
+        document.addEventListener('htmx:afterSwap', updateActiveNav);
+        document.addEventListener('htmx:afterSettle', updateActiveNav);
+
+        // Also re-run on popstate (browser back/forward)
+        window.addEventListener('popstate', updateActiveNav);
+        window.addEventListener('pageshow', updateActiveNav);
+    })();
+    </script>
+    {% endif %}
+ </div>
+
+    <!-- PRE LOADER -->
+    <div class="loader-mask">
+        <div class="loader">
+            <div></div>
+            <div></div>
+        </div>
+    </div>
+    <!-- Latest compiled JavaScript -->
+    <script src="{% static 'js/preloader.js' %}?v=1"></script>
+    <script src="{% static 'js/form-handler.js' %}?v=1"></script>
+    <script src="{% static 'js/back-to-top-button.js' %}?v=1"></script>
+    <script src="{% static 'js/contact-validate.js' %}?v=1"></script>
+    <script src="{% static 'js/contact-form.js' %}?v=1"></script>
+    <script src="{% static 'js/counter.js' %}?v=1"></script>
+    <script src="{% static 'js/aos.js' %}?v=2.3.4"></script>
+
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('/sw.js');
+            });
+        }
+    </script>
+
+    <script>
+        // Initialize AOS
+        $(document).ready(function() {
+            AOS.init({
+                duration: 1000,
+                once: true
+            });
+        });
+    </script>
+
+    <script>
+        // Apply compact treatment and logo to real forms across frontend pages.
+        var paFormStyleDebounceTimer = null;
+
+        function applyPadosiGlobalFormStyling(root) {
+            const scope = root || document;
+            const forms = scope.querySelectorAll('form');
+
+            forms.forEach(function(form) {
+                if (!form || form.dataset.noBranding === 'true' || form.classList.contains('pa-no-compact')) {
+                    return;
+                }
+
+                const formId = form.getAttribute('id') || '';
+                if (formId === 'logout-form' || formId === 'logout-form-mobile') {
+                    return;
+                }
+
+                if (form.closest('.header, .navbar, .dropdown-menu, .mobile-nav-collapse')) {
+                    return;
+                }
+
+                const actionableFields = form.querySelectorAll('input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not([type="button"]), select, textarea');
+                if (actionableFields.length === 0) {
+                    return;
+                }
+
+                form.classList.add('pa-compact-form');
+            });
+        }
+
+        function schedulePadosiGlobalFormStyling(root) {
+            if (paFormStyleDebounceTimer) {
+                clearTimeout(paFormStyleDebounceTimer);
+            }
+
+            const scope = root || document;
+            applyPadosiGlobalFormStyling(scope);
+
+            requestAnimationFrame(function() {
+                applyPadosiGlobalFormStyling(scope);
+            });
+
+            paFormStyleDebounceTimer = setTimeout(function() {
+                applyPadosiGlobalFormStyling(scope);
+            }, 120);
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            schedulePadosiGlobalFormStyling(document);
+
+            if (!window.__paFormObserverInitialized) {
+                window.__paFormObserverInitialized = true;
+
+                const observer = new MutationObserver(function(mutations) {
+                    for (const mutation of mutations) {
+                        for (const node of mutation.addedNodes) {
+                            if (node.nodeType === 1 && (node.matches('form') || node.querySelector('form'))) {
+                                schedulePadosiGlobalFormStyling(document);
+                                return;
+                            }
+                        }
+                    }
+                });
+
+                if (document.body) {
+                    observer.observe(document.body, { childList: true, subtree: true });
+                }
+            }
+        });
+
+        window.addEventListener('load', function() {
+            schedulePadosiGlobalFormStyling(document);
+        });
+
+        document.addEventListener('htmx:load', function(evt) {
+            schedulePadosiGlobalFormStyling((evt.detail && evt.detail.elt) || document);
+        });
+
+        // Initialize AOS
+        $(document).ready(function() {
+            AOS.init({
+                duration: 1000,
+                once: true
+            });
+        });
+    </script>
+
+
+    <script>
+        // Global Re-initialization for SPA transitions
+        document.addEventListener('htmx:afterSwap', function(evt) {
+            // Only scroll to top if we updated the main content area (page navigation)
+            if (evt.detail && evt.detail.target && evt.detail.target.id === 'app-content') {
+                window.scrollTo(0, 0);
+            }
+
+            schedulePadosiGlobalFormStyling(evt.detail.target || document);
+
+            // Refresh AOS
+            if (typeof AOS !== 'undefined') {
+                AOS.refresh();
+                // Sometimes refresh isn't enough for newly added content
+                setTimeout(() => AOS.init(), 100);
+            }
+
+            // Force visibility of all sections (prevents ghosting/hidden elements)
+            setTimeout(function() {
+                $('section').css({
+                    'opacity': '1',
+                    'visibility': 'visible',
+                    'display': 'block'
+                });
+                
+                // Specifically targeting About page classes that were reported missing
+                $('.service-con, .aboutpage-con, .why-exist-con, .what-we-do-con, .seekers-agents-con, .commitment-con').css({
+                    'opacity': '1',
+                    'display': 'block'
+                });
+
+                $('.loader-mask').fadeOut('fast');
+
+                // Auto-hide alerts that are visible on load
+                const alerts = document.querySelectorAll('.alert');
+                alerts.forEach(alert => {
+                    if (alert.offsetHeight > 0 || alert.offsetWidth > 0 || (alert.style.display && alert.style.display !== 'none')) {
+                        setTimeout(() => {
+                            alert.style.transition = 'opacity 0.5s ease';
+                            alert.style.opacity = '0';
+                            setTimeout(() => {
+                                alert.style.display = 'none';
+                            }, 500);
+                        }, 5000);
+                    }
+                });
+            }, 50);
+        });
+
+        document.addEventListener('htmx:afterSettle', function(evt) {
+            schedulePadosiGlobalFormStyling((evt.detail && evt.detail.target) || document);
+        });
+
+        // Password visibility toggle - Global Delegated Listener
+        $(document).on('click', '.password-toggle-icon, #togglePassword', function() {
+            const wrapper = $(this).closest('.password-field-wrapper');
+            const passwordField = wrapper.length ? wrapper.find('input') : $('#password');
+            
+            if (passwordField.length) {
+                const type = passwordField.attr('type') === 'password' ? 'text' : 'password';
+                passwordField.attr('type', type);
+                $(this).toggleClass('fa-eye fa-eye-slash');
+            }
+        });
+
+        // Inline Loading for "View Profile" buttons
+        $(document).on('click', '.view-profile-btn', function(e) {
+            const $btn = $(this);
+            // Skip if the link opens in a new tab (target="_blank")
+            if ($btn.attr('target') === '_blank') {
+                return;
+            }
+            // Only apply if it's a boosted link or standard link that hasn't been clicked yet
+            if (!$btn.hasClass('is-loading')) {
+                $btn.addClass('is-loading');
+                const originalHtml = $btn.html();
+                $btn.data('original-html', originalHtml);
+                $btn.css('width', $btn.outerWidth() + 'px'); // Lock width
+                $btn.html('<i class="fas fa-spinner fa-spin mr-2"></i>Loading...');
+                $btn.addClass('disabled').css('pointer-events', 'none');
+            }
+        });
+
+        function resetViewProfileButtons() {
+            $('.view-profile-btn.is-loading, .view-profile-btn.disabled').each(function() {
+                const $btn = $(this);
+                $btn.removeClass('is-loading disabled').css('pointer-events', 'auto').css('width', '');
+
+                if ($btn.data('original-html')) {
+                    $btn.html($btn.data('original-html'));
+                } else {
+                    $btn.html('View Profile');
+                }
+            });
+        }
+
+        // Reset button states if navigation fails or is aborted
+        document.addEventListener('htmx:afterRequest', function(evt) {
+            resetViewProfileButtons();
+        });
+
+        // Global Login Form Loading State
+        function getDefaultLoginButtonText(form) {
+            const loginTypeInput = form.querySelector('input[name="login_type"]');
+            const loginType = loginTypeInput ? loginTypeInput.value : '';
+
+            if (loginType === 'client') return 'Login as Client';
+            if (loginType === 'agent') return 'Login as Agent';
+            return 'Login';
+        }
+
+        function resetAuthFormSubmitState(form) {
+            if (!form) return;
+
+            const submitBtn = form.querySelector('#submit-btn');
+            const btnText = form.querySelector('#btn-text');
+            const btnIcon = form.querySelector('#btn-icon');
+            const btnSpinner = form.querySelector('#btn-spinner');
+
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.style.opacity = '1';
+                submitBtn.style.cursor = 'pointer';
+            }
+
+            if (btnText) {
+                if (btnText.dataset.originalText) {
+                    btnText.innerText = btnText.dataset.originalText;
+                } else if (form.id === 'forgot-password-form') {
+                    btnText.innerText = 'Email Password Reset Link';
+                } else {
+                    btnText.innerText = getDefaultLoginButtonText(form);
+                }
+            }
+
+            if (btnIcon) btnIcon.style.display = 'inline-block';
+            if (btnSpinner) btnSpinner.style.display = 'none';
+        }
+
+        function resetAllAuthFormStates() {
+            document.querySelectorAll('#login-form, #forgot-password-form').forEach(function(form) {
+                resetAuthFormSubmitState(form);
+            });
+        }
+
+        document.addEventListener('htmx:beforeRequest', function(evt) {
+            const form = evt.detail.elt.closest('#login-form');
+            if (form) {
+                const submitBtn = form.querySelector('#submit-btn');
+                const btnText = form.querySelector('#btn-text');
+                const btnIcon = form.querySelector('#btn-icon');
+                const btnSpinner = form.querySelector('#btn-spinner');
+
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.style.opacity = '0.7';
+                    submitBtn.style.cursor = 'not-allowed';
+                }
+                if (btnText) {
+                    // Try to preserve original text for later
+                    if (!btnText.dataset.originalText) {
+                        btnText.dataset.originalText = btnText.innerText;
+                    }
+                    btnText.innerText = 'Logging in...';
+                }
+                if (btnIcon) btnIcon.style.display = 'none';
+                if (btnSpinner) btnSpinner.style.display = 'inline-block';
+            }
+        });
+
+        document.addEventListener('htmx:afterRequest', function(evt) {
+            const form = evt.detail.elt.closest('#login-form');
+            if (form && evt.detail.xhr.status !== 200) {
+                resetAuthFormSubmitState(form);
+            }
+        });
+
+        // Standard form submit fallback
+        $(document).on('submit', '#login-form', function() {
+            const submitBtn = this.querySelector('#submit-btn');
+            const btnText = this.querySelector('#btn-text');
+            const btnIcon = this.querySelector('#btn-icon');
+            const btnSpinner = this.querySelector('#btn-spinner');
+
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.style.opacity = '0.7';
+            }
+            if (btnText) {
+                if (!btnText.dataset.originalText) btnText.dataset.originalText = btnText.innerText;
+                btnText.innerText = 'Logging in...';
+            }
+            if (btnIcon) btnIcon.style.display = 'none';
+            if (btnSpinner) btnSpinner.style.display = 'inline-block';
+        });
+
+        // Ensure loader is hidden on load
+        $(window).on('load', function() {
+            $('.loader-mask').fadeOut('slow');
+        });
+
+        // Show/Hide Preloader on Navigation
+        document.addEventListener('htmx:configRequest', function(evt) {
+            const path = evt.detail.path || '';
+            const elt = evt.detail.elt;
+            
+            // Only show global preloader for login-related requests (Agent & Client Login)
+            const isLoginRequest = path.includes('login');
+            
+            if (!isLoginRequest) {
+                return;
+            }
+
+            // Don't show global preloader for elements marked with 'no-preloader'
+            // or if the request already has a defined hx-indicator
+            if (elt.closest('.no-preloader') || elt.hasAttribute('hx-indicator')) {
+                return;
+            }
+            $('.loader-mask').show().fadeIn(100);
+        });
+
+        document.addEventListener('htmx:afterOnLoad', function() {
+             $('.loader-mask').fadeOut();
+        });
+
+        // Robust UI state restoration for navigation (Back/Forward)
+        function forceScrollRestore() {
+            if (typeof jQuery !== 'undefined') {
+                $('.loader-mask').hide();
+                $('.loader').hide();
+            } else {
+                var mask = document.querySelector('.loader-mask');
+                if (mask) mask.style.display = 'none';
+            }
+            
+            // Ensure body can scroll
+            document.body.style.overflow = 'auto';
+            document.body.style.height = 'auto';
+            document.documentElement.style.overflow = 'auto';
+            document.documentElement.style.height = 'auto';
+            
+            // Clean up any potential modal leftovers that lock scroll
+            document.body.classList.remove('modal-open');
+            var backdrops = document.querySelectorAll('.modal-backdrop');
+            backdrops.forEach(b => b.remove());
+
+            // Reset any button states that might be stuck in "loading"
+            resetAllAuthFormStates();
+            resetViewProfileButtons();
+            
+            // Refresh AOS animations
+            if (typeof AOS !== 'undefined') {
+                AOS.refresh();
+            }
+        }
+
+        window.addEventListener('popstate', forceScrollRestore);
+        document.addEventListener('htmx:historyRestore', forceScrollRestore);
+        window.addEventListener('pageshow', function(event) {
+            forceScrollRestore();
+        });
+
+        document.addEventListener('htmx:afterSwap', function() {
+            if (typeof AOS !== 'undefined') {
+                AOS.refresh();
+            }
+        });
+
+        // HTMX CSRF Configuration
+        document.body.addEventListener('htmx:configRequest', (event) => {
+            event.detail.headers['X-CSRF-Token'] = '{{ csrf_token }}';
+        });
+
+        // Handle Session Expired (419)
+        document.body.addEventListener('htmx:responseError', (event) => {
+            if (event.detail.xhr.status === 419) {
+                Swal.fire({
+                    title: 'Session Expired',
+                    text: 'Your session has expired. Please refresh the page.',
+                    icon: 'warning',
+                    confirmButtonText: 'Refresh'
+                }).then(() => {
+                    window.location.reload();
+                });
+            }
+        });
+
+        // Handle Network-Level HTMX Errors (server down, timeout, connection refused)
+        // Instead of silently failing, fall back to a standard full-page GET request.
+        document.body.addEventListener('htmx:sendError', (event) => {
+            const elt = event.detail.elt;
+            if (!elt) return;
+
+            // For filter forms: fall back to standard form submit
+            if (elt.tagName === 'FORM') {
+                // Remove HTMX attributes so standard submit takes over
+                elt.removeAttribute('hx-get');
+                elt.removeAttribute('hx-post');
+                elt.submit();
+                return;
+            }
+
+            // For links/buttons with hx-get: navigate normally
+            const hxGet = elt.getAttribute('hx-get');
+            if (hxGet) {
+                window.location.href = hxGet;
+                return;
+            }
+
+            // Generic fallback: reload the current page
+            window.location.reload();
+        });
+
+        // Fallback for any stalled loaders
+        setTimeout(function() {
+            $('.loader-mask').fadeOut();
+        }, 3000);
+
+        // Guest find-agent interception is handled only in find-agents page script.
+
+        if (typeof Toast === 'undefined' || !window.Toast) {
+            window.Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.addEventListener('mouseenter', Swal.stopTimer)
+                    toast.addEventListener('mouseleave', Swal.resumeTimer)
+                }
+            });
+        }
+
+        function toggleFavoriteAgent(btn, agentId) {
+            const isAuth = {{ user.is_authenticated|yesno:"true,false" }};
+            
+            if (!isAuth) {
+                if (typeof window.showQuickRegisterPopup === 'function') {
+                    window.showQuickRegisterPopup(window.location.pathname + window.location.search);
+                } else {
+                    window.location.href = "{% url 'accounts:client_login' %}";
+                }
+                return;
+            }
+
+            const $btn = $(btn);
+            const $svg = $btn.find('svg');
+
+            $.ajax({
+                url: "#",
+                method: 'POST',
+                data: {
+                    _token: "{{ csrf_token }}",
+                    agent_id: agentId
+                },
+                success: function(response) {
+                    if (response.status === 'success') {
+                        if (response.is_favorited) {
+                            $btn.addClass('is-favorited text-red-500');
+                            $svg.attr('fill', 'currentColor');
+                        } else {
+                            $btn.removeClass('is-favorited text-red-500');
+                            $svg.attr('fill', 'none');
+                        }
+                    }
+                },
+                error: function(xhr) {
+                    const message = xhr.responseJSON ? xhr.responseJSON.message : 'Something went wrong';
+                    Swal.fire('Oops!', 'Something didn\'t quite work. Please give it another try.', 'warning');
+                }
+            });
+        }
+
+        (function() {
+            var currentGuestData = null;
+
+            /**
+             * Helper to show guest registration popup and then execute callback
+             */
+            window.showGuestRegistrationPopup = function(title, onRegistered) {
+                // Change URL to #login (or #register) for Meta Ads tracking
+                if (window.history.pushState) {
+                    window.history.pushState(null, null, window.location.pathname + window.location.search + '#login');
+                    if (typeof fbq === 'function') {
+                        fbq('track', 'PageView');
+                    }
+                }
+
+                var isMobile = window.matchMedia('(max-width: 576px)').matches;
+                Swal.fire({
+                    width: isMobile ? 'calc(100vw - 36px)' : '480px',
+                    padding: isMobile ? '0' : '10px',
+                    customClass: {
+                        popup: 'padosi-guest-popup'
+                    },
+                    html: `
+                        <div class="padosi-popup-form" style="font-family: 'Urbanist', sans-serif;">
+                            <div class="padosi-popup-brand" style="margin-bottom: 8px;">
+                                <img src="{% static 'img/logo.png' %}" alt="PadosiAgent" style="width: 90px;">
+                            </div>
+                            
+                            <h2 class="padosi-popup-title">${title}</h2>
+                            <p class="padosi-popup-subtext" style="font-size: 14px; margin-bottom: 20px;">Quickly share your details to proceed.</p>
+
+                            <div id="swal-error-container" class="alert alert-danger d-none" style="font-size: 12px; padding: 10px; border-radius: 8px; margin-bottom: 15px; border: none; background-color: #fef2f2; color: #991b1b; text-align: left;">
+                                <i class="fas fa-exclamation-circle mr-2"></i> <span id="swal-error-message"></span>
+                            </div>
+
+                            <div style="display: grid; gap: 8px;">
+                                <div class="padosi-popup-group">
+                                    <label class="padosi-popup-label">Full Name *</label>
+                                    <input type="text" id="swal-fullname" class="padosi-popup-input" placeholder="Enter your name">
+                                </div>
+                                
+                                <div class="padosi-popup-group">
+                                    <label class="padosi-popup-label">Email Address *</label>
+                                    <input type="email" id="swal-email" class="padosi-popup-input" placeholder="name@example.com">
+                                </div>
+                                
+                                <div class="padosi-popup-group" style="margin-bottom: 2px;">
+                                    <label class="padosi-popup-label">Mobile Number *</label>
+                                    <div style="display: flex; gap: 0;">
+                                        <div style="background: #f1f5f9; border: 1.5px solid #e2e8f0; border-right: none; border-radius: 12px 0 0 12px; padding: 0 12px; display: flex; align-items: center; color: #64748b; font-weight: 700; font-size: 14px;">+91</div>
+                                        <input type="tel" id="swal-mobile" class="padosi-popup-input" placeholder="10-digit number" maxlength="10" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')" 
+                                            style="border-radius: 0 12px 12px 0 !important; flex: 1;">
+                                    </div>
+                                    <span style="font-size: 10px; color: #94a3b8; display: block; margin-top: 4px; padding-left: 2px;">Verification may be required.</span>
+                                </div>
+                            </div>
+                        </div>
+                    `,
+                    showCancelButton: true,
+                    confirmButtonText: 'Continue',
+                    confirmButtonColor: '#0d9488',
+                    cancelButtonText: 'Cancel',
+                    padding: isMobile ? '0.75rem' : '1.5rem',
+                    width: isMobile ? 'calc(100vw - 36px)' : '450px',
+                    customClass: {
+                        popup: 'padosi-guest-popup'
+                    },
+                    preConfirm: function() {
+                        var fullname = $('#swal-fullname').val().trim();
+                        var email = $('#swal-email').val().trim();
+                        var mobile = $('#swal-mobile').val().trim();
+
+                        var showError = function(msg) {
+                            $('#swal-error-message').text(msg);
+                            $('#swal-error-container').removeClass('d-none').hide().fadeIn();
+                            setTimeout(function() {
+                                $('#swal-error-container').fadeOut();
+                            }, 3000);
+                        };
+
+                        $('#swal-error-container').addClass('d-none');
+
+                        if (!fullname) { showError('Full Name is required'); return false; }
+                        if (!email) { showError('Email Address is required'); return false; }
+                        if (!/^\S+@\S+\.\S+$/.test(email)) { showError('Please enter a valid email address'); return false; }
+                        if (!mobile) { showError('Mobile Number is required'); return false; }
+                        if (mobile.length < 10) { showError('Please enter a valid mobile number'); return false; }
+
+                        return { fullname: fullname, email: email, mobile: mobile };
+                    },
+                    allowOutsideClick: true,
+                    allowEscapeKey: true,
+                    backdrop: 'rgba(0,0,0,0.6)'
+                }).then(function(result) {
+                    if (result.isConfirmed) {
+                        currentGuestData = {
+                            fullname: result.value.fullname,
+                            email: result.value.email,
+                            mobile: result.value.mobile
+                        };
+
+                        onRegistered(currentGuestData);
+                    }
+                });
+            };
+
+            var proceedToDestination = function(url, target) {
+                if (target === '_blank') {
+                    window.open(url, '_blank', 'noopener');
+                    return;
+                }
+
+                window.location.href = url;
+            };
+
+            // Global Handler for Contact Buttons (WhatsApp/Call/Social)
+            window.handleAgentContactClick = function(event, element, interactionType) {
+                if (!element) return true;
+                event.preventDefault();
+
+                const isAuth = {{ user.is_authenticated|yesno:"true,false" }};
+                const href = element.getAttribute('href');
+                const agentId = element.getAttribute('data-agent-id');
+                const serviceType = element.getAttribute('data-service-type') || '';
+                const insuranceType = element.getAttribute('data-insurance-type') || '';
+                const insuranceCompany = element.getAttribute('data-insurance-company') || '';
+                const target = element.getAttribute('target');
+
+                const captureLeadAndProceed = (guestData) => {
+                    var postData = {
+                        _token: "{{ csrf_token }}",
+                        agent_id: agentId,
+                        interaction_type: interactionType,
+                        service_type: serviceType,
+                        insurance_type: insuranceType,
+                        insurance_company: insuranceCompany,
+                        source_page: window.location.pathname
+                    };
+
+                    if (guestData) {
+                        postData.fullname = guestData.fullname;
+                        postData.email = guestData.email;
+                        postData.mobile = guestData.mobile;
+                    }
+
+                    const captureLead = function() {
+                        $.ajax({
+                            url: "{% url 'agents:capture_lead' %}",
+                            type: "POST",
+                            data: postData,
+                            success: function(resp) {
+                                Swal.close();
+                                // Open link if it exists, even if it's a duplicate or has a silent success
+                                if (resp.success && resp.url && resp.url !== '#') {
+                                    proceedToDestination(resp.url, target);
+                                } else if (resp.message) {
+                                    const errMsg = resp.message || 'This agent has not provided contact details for this format.';
+                                    Swal.fire('Notice', errMsg, 'info');
+                                }
+                            },
+                            error: function(xhr) {
+                                Swal.close();
+                                let msg = 'Something went wrong. Please refresh the page and try again.';
+                                if (xhr.status === 403) {
+                                    msg = 'Access denied. Suspicious activity has been detected from your IP.';
+                                }
+                                Swal.fire('Oops!', msg, 'warning');
+                            }
+                        });
+                    };
+
+                    Swal.fire({
+                        title: 'Connecting you...',
+                        allowOutsideClick: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                            if (!isAuth && guestData) {
+                                $.ajax({
+                                    url: "{% url 'clients:quick_register' %}",
+                                    type: "POST",
+                                    data: postData,
+                                    success: function() {
+                                        captureLead();
+                                    },
+                                    error: function() {
+                                        Swal.close();
+                                        Swal.fire('Almost there!', 'We had a small hiccup during registration. Please try again.', 'info');
+                                    }
+                                });
+                            } else {
+                                captureLead();
+                            }
+                        }
+                    });
+                };
+
+                if (!isAuth) {
+                    window.showQuickRegisterPopup(window.location.pathname + window.location.search, function(response) {
+                        var postData = {
+                            _token: "{{ csrf_token }}",
+                            agent_id: agentId,
+                            interaction_type: interactionType,
+                            service_type: serviceType,
+                            insurance_type: insuranceType,
+                            insurance_company: insuranceCompany,
+                            source_page: window.location.pathname
+                        };
+                        
+                        Swal.fire({
+                            title: 'Connecting you...',
+                            allowOutsideClick: false,
+                            didOpen: () => {
+                                Swal.showLoading();
+                                $.ajax({
+                                    url: "{% url 'agents:capture_lead' %}",
+                                    type: "POST",
+                                    data: postData,
+                                    success: function(resp) {
+                                        Swal.close();
+                                        if (resp.success && resp.url && resp.url !== '#') {
+                                            proceedToDestination(resp.url, target);
+                                            setTimeout(() => { window.location.reload(); }, 1500);
+                                        } else if (resp.message) {
+                                            const errMsg = resp.message || 'This agent has not provided contact details for this format.';
+                                            Swal.fire('Notice', errMsg, 'info').then(() => { window.location.reload(); });
+                                        } else {
+                                            window.location.reload();
+                                        }
+                                    },
+                                    error: function() {
+                                        Swal.close();
+                                        window.location.reload();
+                                    }
+                                });
+                            }
+                        });
+                    });
+                } else {
+                    captureLeadAndProceed();
+                }
+
+                return false;
+            };
+
+            // Global Quick Register Popup (moved from find-agents for better flow)
+            window.showQuickRegisterPopup = function(redirectUrl, onSuccessCallback) {
+                if (Swal.isVisible()) return;
+
+                // Change URL to #register for Meta Ads tracking
+                if (window.history.pushState) {
+                    window.history.pushState(null, null, window.location.pathname + window.location.search + '#register');
+                    if (typeof fbq === 'function') {
+                        fbq('track', 'PageView');
+                    }
+                }
+
+                const isMobilePopup = window.matchMedia('(max-width: 576px)').matches;
+
+                let welcomeHtml = `
+                    <div class="swal-welcome-content" style="font-family: 'Urbanist', sans-serif;">
+                        <div class="guest-gate-brand">
+                            <img src="{% static 'img/logo.png' %}" alt="PadosiAgent">
+                        </div>
+                        <h3 class="guest-gate-heading">Welcome to PadosiAgent! 👋</h3>
+                        <p class="guest-gate-subtext">
+                            "Agents can serve you better when they are your Padosi"
+                        </p>
+
+                        <div id="swal-error-container" class="alert alert-danger d-none" style="font-size: 13px; padding: 10px; border-radius: 8px; margin-bottom: 15px; border: none; background-color: #fef2f2; color: #991b1b; text-align: left;">
+                            <i class="fas fa-exclamation-circle mr-2"></i> <span id="swal-error-message"></span>
+                        </div>
+
+                        <div class="guest-gate-form">
+                        <div class="guest-gate-group">
+                            <label class="guest-gate-label">
+                                <i class="far fa-user mr-2"></i> Name *
+                            </label>
+                            <input type="text" id="swal-fullname" class="form-control guest-gate-input" placeholder="Enter your full name">
+                        </div>
+                        
+                        <div class="guest-gate-group">
+                            <label class="guest-gate-label">
+                                <i class="far fa-envelope mr-2"></i> Email *
+                            </label>
+                            <input type="email" id="swal-email" class="form-control guest-gate-input" placeholder="your.email@example.com">
+                        </div>
+                        
+                        <div class="guest-gate-group">
+                            <label class="guest-gate-label">
+                                <i class="fas fa-phone-volume mr-2"></i> Mobile Number *
+                            </label>
+                            <div class="guest-gate-mobile-wrap">
+                                <span class="guest-gate-prefix">+91</span>
+                                <input type="tel" id="swal-mobile" class="form-control guest-gate-mobile" placeholder="98765 43210" maxlength="10" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                            </div>
+                        </div>
+                        
+                        <input type="hidden" id="swal-pincode" value="${new URLSearchParams(window.location.search).get('pincode') || ''}">
+                        </div>
+                    </div>
+                `;
+
+                Swal.fire({
+                    title: '',
+                    html: welcomeHtml,
+                    showCancelButton: false,
+                    confirmButtonText: 'Get Started',
+                    confirmButtonColor: '#273c8e',
+                    padding: isMobilePopup ? '0.75rem' : '1.25rem',
+                    width: isMobilePopup ? '88vw' : '430px',
+                    customClass: {
+                        popup: 'guest-gate-popup',
+                        confirmButton: 'btn btn-primary btn-lg rounded-pill px-5 w-100',
+                        title: 'p-0 mb-2'
+                    },
+                    preConfirm: () => {
+                        const fullname = $('#swal-fullname').val().trim();
+                        const email = $('#swal-email').val().trim();
+                        const mobile = $('#swal-mobile').val().trim();
+                        const pincode = $('#swal-pincode').val().trim();
+
+                        const showError = (msg) => {
+                            $('#swal-error-message').text(msg);
+                            $('#swal-error-container').removeClass('d-none').hide().fadeIn();
+                            setTimeout(() => {
+                                $('#swal-error-container').fadeOut(function() {
+                                    $(this).addClass('d-none');
+                                });
+                            }, 3000);
+                        };
+
+                        $('#swal-error-container').addClass('d-none');
+
+                        if (!fullname) { showError('Full Name is required'); return false; }
+                        if (!email) { showError('Email Address is required'); return false; }
+                        if (!/^\S+@\S+\.\S+$/.test(email)) { showError('Please enter a valid email address'); return false; }
+                        if (!mobile) { showError('Mobile Number is required'); return false; }
+                        if (mobile.length < 10) { showError('Please enter a valid 10-digit mobile number'); return false; }
+
+                        return { fullname, email, mobile, pincode };
+                    },
+                    allowOutsideClick: true,
+                    allowEscapeKey: true,
+                    backdrop: `rgba(0,0,0,0.6)`
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        Swal.fire({
+                            title: 'Connecting you...',
+                            allowOutsideClick: false,
+                            allowEscapeKey: false,
+                            didOpen: () => {
+                                Swal.showLoading();
+                                $.ajax({
+                                    url: "{% url 'clients:quick_register' %}",
+                                    type: "POST",
+                                    timeout: 30000,
+                                    data: {
+                                        _token: "{{ csrf_token }}",
+                                        ...result.value,
+                                        redirect_url: redirectUrl || (function() {
+                                            var u = new URL(window.location.href);
+                                            u.searchParams.set('openFilter', '1');
+                                            return u.pathname + u.search;
+                                        })()
+                                    },
+                                    success: function(response) {
+                                        if (response.status === 'success') {
+                                            Swal.fire({
+                                                icon: 'success',
+                                                title: 'Welcome!',
+                                                text: 'We found matching agents for you.',
+                                                timer: 2500,
+                                                showConfirmButton: false,
+                                                padding: '2rem'
+                                            }).then(() => {
+                                                if (typeof onSuccessCallback === 'function') {
+                                                    onSuccessCallback(response);
+                                                } else {
+                                                    window.location.reload();
+                                                }
+                                            });
+                                        } else {
+                                            Swal.fire('Oops!', response.message || 'Something went wrong. Please try again.', 'warning');
+                                        }
+                                    },
+                                    error: function(xhr) {
+                                        const message = xhr.status === 0
+                                            ? 'Request timed out. Please check your internet and try again.'
+                                            : (xhr.responseJSON ? xhr.responseJSON.message : 'An error occurred');
+                                        Swal.fire('Oops!', 'We couldn\'t process that. Please refresh and try again.', 'warning');
+                                    }
+                                });
+                            }
+                        });
+                    } else if (result.dismiss === Swal.DismissReason.cancel || result.dismiss === Swal.DismissReason.backdrop || result.dismiss === Swal.DismissReason.esc) {
+                        // Clear the #register hash if they cancel/close
+                        if (window.location.hash === '#register') {
+                            if (window.history.pushState) {
+                                window.history.pushState(null, null, window.location.pathname + window.location.search);
+                            } else {
+                                window.location.hash = '';
+                            }
+                        }
+                    }
+                });
+            };
+
+            // Define pincode handler globally before popup
+            window.handlePincodeInput = function(val) {
+                const searchBtn = $('#swal-btn-search-pill');
+                const nearMeBtn = $('#detect-location-btn');
+                const separator = $('#near-me-separator');
+                if (val && val.length > 0) {
+                    searchBtn.css({ 'opacity': '1', 'transform': 'scale(1)', 'pointer-events': 'auto' });
+                    nearMeBtn.css({ 'opacity': '0', 'height': '0', 'margin': '0', 'padding': '0', 'overflow': 'hidden', 'pointer-events': 'none' });
+                    separator.css({ 'opacity': '0', 'height': '0', 'margin': '0', 'overflow': 'hidden' });
+                } else {
+                    searchBtn.css({ 'opacity': '0', 'transform': 'scale(0.8)', 'pointer-events': 'none' });
+                    nearMeBtn.css({ 'opacity': '1', 'height': '60px', 'margin-top': '0', 'padding': '', 'pointer-events': 'auto' });
+                    separator.css({ 'opacity': '1', 'height': 'auto', 'margin': '15px 0' });
+                }
+            };
+
+            // PREMIUM: Dynamic Location Discovery Experience
+            window.showLocationPopup = function(baseUrl) {
+                if (Swal.isVisible()) return;
+                
+                if (typeof window.closeMobileFilter === 'function') window.closeMobileFilter();
+                const isMobilePopup = window.matchMedia('(max-width: 576px)').matches;
+
+                Swal.fire({
+                    title: '',
+                    html: `
+                        <div class="swal-welcome-content" style="font-family: 'Urbanist', sans-serif;">
+                            <div class="guest-gate-brand">
+                                <img src="{% static 'img/logo.png' %}" alt="PadosiAgent">
+                            </div>
+                            <h3 class="guest-gate-heading">Find Agents Near You</h3>
+                            <p class="guest-gate-subtext">"Agents can serve you better when they are your Padosi"</p>
+
+                            <div class="guest-gate-form mt-4">
+                                <div id="swal-error-container-loc" class="alert alert-danger d-none" style="font-size: 13px; padding: 10px; border-radius: 8px; margin-bottom: 15px; border: none; background-color: #fef2f2; color: #991b1b; text-align: left;">
+                                    <i class="fas fa-exclamation-circle mr-2"></i> <span id="swal-error-message-loc"></span>
+                                </div>
+
+                                <form id="padosi-location-form" class="pa-no-compact" data-no-branding="true">
+                                    <div class="padosi-location-flow mt-4" style="font-family: 'Urbanist', sans-serif;">
+                                        <div class="padosi-input-group" style="position: relative; display: flex; align-items: center; background: #ffffff; border: 2px solid #e2e8f0; border-radius: 16px; height: 60px; transition: all 0.3s ease; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);">
+                                            <div style="padding-left: 20px; color: #64748b; font-size: 18px;">
+                                                <i class="fas fa-map-pin"></i>
+                                            </div>
+                                            <input type="text" id="swal-manual-pincode" placeholder="Enter Pincode" maxlength="6" inputmode="numeric" 
+                                                   oninput="this.value = this.value.replace(/[^0-9]/g, ''); window.handlePincodeInput(this.value)"
+                                                   style="flex: 1; border: none; outline: none; padding: 0 15px; font-size: 17px; font-weight: 600; background: transparent; color: #1e293b; pointer-events: auto !important;"
+                                                   autocomplete="off">
+                                            
+                                            <button id="swal-btn-search-pill" type="button" 
+                                                    style="margin-right: 6px; background: #273c8e; color: #fff; border: none; border-radius: 12px; width: 48px; height: 48px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 18px; opacity: 0; transform: scale(0.8); transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); pointer-events: none;">
+                                                <i class="fas fa-arrow-right"></i>
+                                            </button>
+                                        </div>
+
+                                        <div id="near-me-separator" style="text-align: center; margin: 15px 0; display: flex; align-items: center; gap: 10px; transition: all 0.3s;">
+                                            <div style="flex: 1; height: 1px; background: #e2e8f0;"></div>
+                                            <span style="font-size: 12px; color: #94a3b8; font-weight: 700;">OR</span>
+                                            <div style="flex: 1; height: 1px; background: #e2e8f0;"></div>
+                                        </div>
+
+                                        <button id="detect-location-btn" type="button" 
+                                                style="width: 100%; height: 60px; background: #fff; color: #273c8e; border: 2px solid #273c8e; border-radius: 16px; font-weight: 700; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: all 0.3s;">
+                                            <i class="fas fa-location-arrow"></i>
+                                            Use Current Location
+                                        </button>
+                                        <div id="swal-manual-error" class="text-danger d-none mt-2 text-center" style="font-size: 12px; font-weight: 500;"></div>
+                                    </div>
+                                </form>
+                                <button type="button" id="swal-btn-cancel" style="width: 100%; margin-top: 20px; height: 50px; background: #f1f5f9; color: #475569; border: none; border-radius: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s;">
+                                    Maybe Later
+                                </button>
+                            </div>
+                        </div>
+                    `,
+                    showConfirmButton: false,
+                    focusConfirm: false,
+                    padding: isMobilePopup ? '1rem' : '1.5rem',
+                    width: isMobilePopup ? '92vw' : '450px',
+                    customClass: { popup: 'guest-gate-popup' },
+                    didOpen: () => {
+                        // Focus the input automatically
+                        setTimeout(() => {
+                            const pincodeInput = document.getElementById('swal-manual-pincode');
+                            if (pincodeInput) pincodeInput.focus();
+                        }, 200);
+
+                        window.handlePincodeInput = function(val) {
+                            const searchBtn = $('#swal-btn-search-pill');
+                            const nearMeBtn = $('#detect-location-btn');
+                            const separator = $('#near-me-separator');
+                            if (val.length > 0) {
+                                searchBtn.css({ 'opacity': '1', 'transform': 'scale(1)', 'pointer-events': 'auto' });
+                                nearMeBtn.css({ 'opacity': '0', 'height': '0', 'margin': '0', 'padding': '0', 'overflow': 'hidden', 'pointer-events': 'none' });
+                                separator.css({ 'opacity': '0', 'height': '0', 'margin': '0', 'overflow': 'hidden' });
+                            } else {
+                                searchBtn.css({ 'opacity': '0', 'transform': 'scale(0.8)', 'pointer-events': 'none' });
+                                nearMeBtn.css({ 'opacity': '1', 'height': '60px', 'margin-top': '0', 'padding': '', 'pointer-events': 'auto' });
+                                separator.css({ 'opacity': '1', 'height': 'auto', 'margin': '15px 0' });
+                            }
+                        };
+
+                        $('#swal-btn-search-pill').on('click', function(e) {
+                            e.preventDefault();
+                            const pincode = $('#swal-manual-pincode').val().trim();
+                            if (pincode.length < 6) {
+                                $('#swal-manual-error').text('Please enter a valid 6-digit pincode').removeClass('d-none');
+                                return;
+                            }
+                            
+                            // Build clear target URL
+                            let targetUrl;
+                            try {
+                                targetUrl = new URL(baseUrl, window.location.origin);
+                            } catch(err) {
+                                targetUrl = new URL(window.location.origin + baseUrl);
+                            }
+                            targetUrl.searchParams.set('pincode', pincode);
+                            window.location.href = targetUrl.toString();
+                        });
+
+                        $('#swal-btn-cancel').on('click', () => {
+                            {% if not has_location %}
+                                window.location.href = "/";
+                            {% else %}
+                                Swal.close();
+                            {% endif %}
+                        });
+                        
+                        $('#swal-manual-pincode').on('keypress', (e) => {
+                            if (e.which == 13) {
+                                e.preventDefault();
+                                $('#swal-btn-search-pill').trigger('click');
+                            }
+                        });
+
+                        $('#detect-location-btn').on('click', function() {
+                            const btn = $(this);
+                            const origHtml = btn.html();
+                            btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Detecting...');
+                            
+                            if (!navigator.geolocation) {
+                                $('#swal-error-message-loc').text('Geolocation is not supported by your browser.');
+                                $('#swal-error-container-loc').removeClass('d-none');
+                                btn.prop('disabled', false).html(origHtml);
+                                return;
+                            }
+
+                            navigator.geolocation.getCurrentPosition((pos) => {
+                                const targetUrl = new URL(baseUrl, window.location.origin);
+                                targetUrl.searchParams.set('lat', pos.coords.latitude);
+                                targetUrl.searchParams.set('lng', pos.coords.longitude);
+                                window.location.href = targetUrl.toString();
+                            }, (err) => {
+                                let errorMsg = 'Location access denied.';
+                                if (err.code === err.PERMISSION_DENIED) {
+                                    errorMsg = 'Permission denied. Please enable location access.';
+                                } else if (err.code === err.POSITION_UNAVAILABLE) {
+                                    errorMsg = 'Location information is unavailable.';
+                                } else if (err.code === err.TIMEOUT) {
+                                    errorMsg = 'Location request timed out.';
+                                }
+                                $('#swal-error-message-loc').text(errorMsg);
+                                $('#swal-error-container-loc').removeClass('d-none');
+                                btn.prop('disabled', false).html(origHtml);
+                            }, { timeout: 10000 });
+                        });
+                    }
+                }).then((result) => {
+                    {% if not has_location %}
+                    if (result.dismiss) {
+                        window.location.href = "/";
+                    }
+                    {% endif %}
+                });
+            };
+
+            window.requestLocationAndExplore = function(baseUrl) {
+                {% if not has_location %}
+                if (baseUrl.includes('find-agents')) {
+                    window.showLocationPopup(baseUrl);
+                    return;
+                }
+                {% endif %}
+                window.location.href = baseUrl;
+            };
+
+            const checkHash = () => {
+                if (window.location.hash === '#register' && !{{ user.is_authenticated|yesno:"true,false" }}) {
+                    if (typeof window.showQuickRegisterPopup === 'function') window.showQuickRegisterPopup();
+                }
+            };
+            
+            $(document).ready(checkHash);
+            window.addEventListener('hashchange', checkHash);
+
+            // --- Global Link Preview Engine ---
+            window.initLinkPreviews = function(scope) {
+                const containers = $(scope || document).find('.agent-link-preview-container:not(.processed)');
+                if (containers.length === 0) return;
+
+                containers.each(function() {
+                    const $container = $(this);
+                    const url = $container.data('url');
+                    if (!url) return;
+                    $container.addClass('processed');
+
+                    $.ajax({
+                        url: "/api/og-preview",
+                        data: { url: url },
+                        method: 'GET',
+                        success: function(data) {
+                            $container.html(`
+                                <a href="${data.url}" target="_blank" class="agent-og-preview-card">
+                                    <div class="og-image-box">
+                                        ${data.image ? `<img src="${data.image}" onerror="this.parentElement.innerHTML='<i class=\"fas fa-link\"></i>'">` : '<i class="fas fa-link"></i>'}
+                                    </div>
+                                    <div class="og-content">
+                                        <div class="og-title">${data.title || 'Visit Website'}</div>
+                                        <span class="og-domain">${data.domain || ''}</span>
+                                    </div>
+                                    <div class="og-arrow"><i class="fas fa-chevron-right"></i></div>
+                                </a>
+                            `).hide().fadeIn(300);
+                        },
+                        error: () => $container.hide()
+                    });
+                });
+            };
+
+            $(document).ready(() => window.initLinkPreviews(document));
+            document.addEventListener('htmx:afterOnLoad', (evt) => window.initLinkPreviews(evt.detail.elt));
+
+        })();
+    </script>
+</body>
+
+</html>

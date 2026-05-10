@@ -1,0 +1,57 @@
+{% extends 'admin_panel/layout.html' %}
+{% load static %}
+
+{% block title', 'Template Settings — PadosiAgent Admin %}
+{% block breadcrumb_title', 'System › Document & Email Templates %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h4 class="m-0">Edit Layout Structures</h4>
+        </div>
+
+        {% if session('success' %})
+            <div class="alert alert-success">{{ session('success') }}</div>
+        {% endif %}
+        {% if session('error' %})
+            <div class="alert alert-danger">{{ session('error') }}</div>
+        {% endif %}
+
+        <div class="card mb-4">
+            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                <h6 class="m-0 font-weight-bold"><i class="fa-solid fa-code me-2"></i> Structure Editor</h6>
+                
+                <form method="GET" action="{% url 'admin.settings.templates' %}" class="d-flex align-items-center">
+                    <label class="me-2 fw-bold text-nowrap">Select Template:</label>
+                    <select name="type" class="form-select w-auto form-select-sm" onchange="this.form.submit()">
+                        <option value="invoice" {{ type === 'invoice' ? 'selected' : '' }}>PDF Registration Invoice</option>
+                        <option value="email_credentials" {{ type === 'email_credentials' ? 'selected' : '' }}>Agent Credentials Email</option>
+                        <option value="email_otp" {{ type === 'email_otp' ? 'selected' : '' }}>OTP Verification Email</option>
+                    </select>
+                </form>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-warning p-3 rounded" style="font-size: 13px;">
+                    <strong><i class="fa-solid fa-triangle-exclamation me-1"></i> Developer Mode Warning:</strong> You are directly editing the source code (HTML/Blade structure) for the {{ str_replace('_', ' ', type) }} template. Please be cautious. Avoid accidentally deleting Blade directives like <code>@{{ agent.fullname }}</code> or <code>@@foreach</code> as this could crash the document generator.
+                </div>
+                
+                <form method="POST" action="{% url 'admin.settings.templates.update' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="type" value="{{ type }}">
+                    
+                    <div class="mb-3">
+                        <textarea class="form-control" name="file_content" rows="25" style="font-family: 'Courier New', Courier, monospace; font-size: 13px; background-color: #f8f9fa;" spellcheck="false" required>{{ content }}</textarea>
+                    </div>
+
+                    <div class="text-end">
+                        <button type="submit" class="btn btn-primary btn-lg shadow-sm px-5" onclick="return confirm('Are you sure you want to save these raw template changes? This will impact live users immediately.')">
+                            <i class="fa-solid fa-save me-2"></i> Save Structure
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
