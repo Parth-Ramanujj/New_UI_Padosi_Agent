@@ -1,1 +1,0 @@
-# PadosiAgent Django Apps Package
