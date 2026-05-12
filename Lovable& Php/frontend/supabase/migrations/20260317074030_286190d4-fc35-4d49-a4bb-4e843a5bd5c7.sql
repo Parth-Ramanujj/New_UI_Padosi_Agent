@@ -1,0 +1,1 @@
+DROP POLICY "System can insert notifications" ON public.agent_notifications;

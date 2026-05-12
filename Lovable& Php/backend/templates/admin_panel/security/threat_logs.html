@@ -1,0 +1,152 @@
+{% extends 'admin_panel/layout.html' %}
+{% load static %}
+
+
+{% block title', 'Security Threat Intelligence — PadosiAgent Admin %}
+{% block breadcrumb_title', 'Security > Threat Logs %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h4 class="m-0"><i class="fa-solid fa-bug-slash text-danger me-2"></i> Security Threat Intelligence</h4>
+                <p class="text-muted small mb-0">Real-time monitoring of malicious payloads and hacker profiles.</p>
+            </div>
+            <a href="{% url 'admin.security.blocked-ips' %}" class="btn btn-outline-danger">
+                <i class="fa-solid fa-shield-halved me-1"></i> Managed Blocked IPs
+            </a>
+        </div>
+
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-dark text-white py-3 d-flex justify-content-between align-items-center">
+                <h6 class="m-0 font-weight-bold">Recent Threat Detections</h6>
+                <span class="badge bg-danger">{{ (isset(threatLogs) && method_exists(threatLogs, 'total')) ? threatLogs.total() : '0' }} Total Events</span>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="bg-light">
+                            <tr>
+                                <th class="ps-4">Detected At</th>
+                                <th>IP Address</th>
+                                <th>Threat Type</th>
+                                <th>Hacker Profile</th>
+                                <th>Location & ISP</th>
+                                <th class="text-end pe-4">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+{% if count(threatLogs %} > 0)
+{% for threat in threatLogs %}
+                            <tr>
+                                <td class="ps-4 text-muted small">
+                                    {{ threat.created_at.format('d M Y') }}<br>
+                                    {{ threat.created_at.format('h:i A') }}
+                                </td>
+                                <td>
+                                    <span class="fw-bold">{{ threat.ip_address }}</span>
+                                </td>
+                                <td>
+                                    {% if threat->event_type == 'SQL Injection' %}
+                                    <span class="badge bg-danger text-white px-2 py-1 shadow-sm">
+                                        <i class="fa-solid fa-database me-1"></i> SQLi
+                                    </span>
+                                    {% else %}if($threat->event_type == 'Cross Site Scripting (XSS)')
+                                    <span class="badge bg-warning text-dark px-2 py-1 shadow-sm">
+                                        <i class="fa-solid fa-code me-1"></i> XSS
+                                    </span>
+                                    {% else %}if($threat->event_type == 'Path Traversal')
+                                    <span class="badge bg-primary text-white px-2 py-1 shadow-sm">
+                                        <i class="fa-solid fa-folder-tree me-1"></i> Path Traversal
+                                    </span>
+                                    {% else %}
+                                    <span class="badge bg-secondary text-white px-2 py-1 shadow-sm">
+                                        <i class="fa-solid fa-folder-open me-1"></i> {{ threat.event_type }}
+                                    </span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="avatar-sm me-2 bg-light rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
+                                            <i class="fa-solid fa-user-secret text-secondary"></i>
+                                        </div>
+                                        <div>
+                                            <div class="fw-semibold text-dark small">{{ threat.hacker_name|default:'Anonymous Guest' }}</div>
+                                            <div class="text-muted" style="font-size: 11px;">{{ threat.hacker_email ?: 'No email data' }}</div>
+                                            {% if threat->hacker_mobile && threat->hacker_mobile !== 'N/A' %}
+                                            <div class="text-muted" style="font-size: 11px;"><i class="fa-solid fa-phone me-1"></i> {{ threat.hacker_mobile }}</div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="small text-dark">{{ threat.location ?: 'Detecting...' }}</div>
+                                    <div class="text-muted" style="font-size: 11px;">{{ threat.isp ?: 'Unknown ISP' }}</div>
+                                </td>
+                                <td class="text-end pe-4">
+                                    <button class="btn btn-sm btn-light border" type="button" data-bs-toggle="collapse" data-bs-target="#log-{{ threat.id }}">
+                                        <i class="fa-solid fa-eye"></i>
+                                    </button>
+                                    <form action="{% url 'admin.security.block-ip' %}" method="POST" class="d-inline ms-1">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="ip_address" value="{{ threat.ip_address }}">
+                                        <input type="hidden" name="reason" value="Recurring threats: {{ threat.event_type }}">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger shadow-none" title="Instant Ban">
+                                            <i class="fa-solid fa-ban"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                            <tr class="collapse bg-light bg-opacity-50" id="log-{{ threat.id }}">
+                                <td colspan="6" class="p-4">
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3 mb-md-0">
+                                            <h6 class="text-uppercase fw-bold text-muted small mb-2">Targeted URL</h6>
+                                            <div class="p-2 border rounded bg-white text-break small">
+                                                <code>{{ threat.url }}</code>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <h6 class="text-uppercase fw-bold text-muted small mb-2">Malicious Payload Captured</h6>
+                                            <div class="p-2 border rounded bg-white text-break small text-danger font-monospace" style="max-height: 150px; overflow-y: auto;">
+                                                {{ threat.payload }}
+                                            </div>
+                                        </div>
+                                        <div class="col-12 mt-3">
+                                             <h6 class="text-uppercase fw-bold text-muted small mb-1">User Agent Fingerprint</h6>
+                                             <div class="text-muted" style="font-size: 11px;">{{ threat.user_agent }}</div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+{% endfor %}
+{% else %}
+                            <tr>
+                                <td colspan="6" class="text-center py-5 text-muted small">
+                                    <i class="fa-solid fa-shield-circle-check text-success fa-3x mb-3"></i><br>
+                                    No security threats detected.
+                                </td>
+                            </tr>
+{% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            {% if threatLogs->hasPages( %})
+            <div class="card-footer bg-white border-top py-3">
+                {{ threatLogs.links() }}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+    .avatar-sm { width: 32px; height: 32px; }
+    .badge { font-weight: 500; font-size: 11px; }
+    .small { font-size: 13px; }
+    code { color: #d63384; font-size: 11px; }
+    .btn-sm { padding: .25rem .5rem; }
+</style>
+{% endblock %}

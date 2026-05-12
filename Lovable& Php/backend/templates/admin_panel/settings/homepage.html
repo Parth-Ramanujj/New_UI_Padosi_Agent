@@ -1,0 +1,275 @@
+{% extends 'admin_panel/layout.html' %}
+{% load static %}
+
+{% block title', 'Homepage Dynamic — PadosiAgent Admin %}
+{% block breadcrumb_title', 'Content Control › Homepage Dynamic %}
+
+{% block content %}
+<form method="POST" action="{% url 'admin.settings.homepage.update' %}" id="homepage-form">
+    {% csrf_token %}
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h4 class="m-0 fw-bold">Homepage Dynamic Sections</h4>
+            <p class="text-muted mb-0" style="font-size: 13px;">Control text and visibility for every section of the homepage.</p>
+        </div>
+        <button type="submit" class="btn btn-primary shadow-sm px-4">
+            <i class="fa-solid fa-cloud-arrow-up me-2"></i> Save All Changes
+        </button>
+    </div>
+
+    <!-- Tabs Navigation -->
+    <ul class="nav nav-tabs mb-4" id="homeTab" role="tablist" style="border-bottom:2px solid #e2e8f0;">
+        <li class="nav-item">
+            <a class="nav-link active fw-semibold" data-bs-toggle="tab" href="#tab-hero" style="font-size:13px;">🎯 Hero Banner</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link fw-semibold" data-bs-toggle="tab" href="#tab-benefits" style="font-size:13px;">✅ Benefits</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link fw-semibold" data-bs-toggle="tab" href="#tab-claims" style="font-size:13px;">🏥 Claims</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link fw-semibold" data-bs-toggle="tab" href="#tab-review" style="font-size:13px;">📋 Policy Review</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link fw-semibold" data-bs-toggle="tab" href="#tab-trust" style="font-size:13px;">🛡️ Trust</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link fw-semibold" data-bs-toggle="tab" href="#tab-works" style="font-size:13px;">🪜 How It Works</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link fw-semibold" data-bs-toggle="tab" href="#tab-visibility" style="font-size:13px;">👁️ Visibility</a>
+        </li>
+    </ul>
+
+    <div class="tab-content">
+        <!-- Tab: Hero -->
+        <div class="tab-pane fade show active" id="tab-hero">
+            <div class="card mb-4">
+                <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="m-0 fw-bold"><i class="fa-solid fa-flag me-2 text-primary"></i>Hero / Banner Section</h6>
+                        <small class="text-muted">The main headline and subheadline displayed at the top of the homepage.</small>
+                    </div>
+                    <div class="form-check form-switch ms-3">
+                        <input class="form-check-input" type="checkbox" name="homepage_content[hero][visible]" value="1" {{ (content.hero.visible|default:true) ? 'checked' : '' }} id="heroVisible">
+                        <label class="form-check-label fw-semibold" for="heroVisible" style="font-size:13px;">Visible</label>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-12">
+                            <label class="form-label fw-semibold">Main Headline <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" name="homepage_content[hero][headline]"
+                                value="{{ content.hero.headline|default:'Find Trusted & Verified Insurance Experts in your Neighbourhood' }}"
+                                placeholder="Enter hero headline text">
+                            <small class="text-muted">This is the large primary heading visible to visitors.</small>
+                        </div>
+                        <div class="col-md-12">
+                            <label class="form-label fw-semibold">Subheadline</label>
+                            <input type="text" class="form-control" name="homepage_content[hero][subheadline]"
+                                value="{{ content.hero.subheadline|default:'Connect with your local PadosiAgent' }}"
+                                placeholder="Enter subheadline text">
+                            <small class="text-muted">Secondary supporting text under the headline.</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab: Benefits -->
+        <div class="tab-pane fade" id="tab-benefits">
+            <div class="card mb-4">
+                <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="m-0 fw-bold"><i class="fa-solid fa-circle-check me-2 text-success"></i>Benefits Section (Buy/Port/Renew)</h6>
+                        <small class="text-muted">Title and subtitle for the insurance type selection icon grid.</small>
+                    </div>
+                    <div class="form-check form-switch ms-3">
+                        <input class="form-check-input" type="checkbox" name="homepage_content[benefits][visible]" value="1" {{ (content.benefits.visible|default:true) ? 'checked' : '' }} id="benefitsVisible">
+                        <label class="form-check-label fw-semibold" for="benefitsVisible" style="font-size:13px;">Visible</label>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Section Title</label>
+                            <input type="text" class="form-control" name="homepage_content[benefits][title]"
+                                value="{{ content.benefits.title|default:'Buy/Port/Renew Insurance with PadosiAgent' }}"
+                                placeholder="Section title">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Section Subtitle</label>
+                            <input type="text" class="form-control" name="homepage_content[benefits][subtitle]"
+                                value="{{ content.benefits.subtitle|default:'Click on the Icon to search for PadosiAgent' }}"
+                                placeholder="Section subtitle / instruction text">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab: Claims -->
+        <div class="tab-pane fade" id="tab-claims">
+            <div class="card mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 fw-bold"><i class="fa-solid fa-hand-holding-medical me-2 text-danger"></i>Claims Assistance Section</h6>
+                    <small class="text-muted">Content for the claim assistance discovery section.</small>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">Title</label>
+                            <input type="text" class="form-control" name="homepage_content[claims][title]"
+                                value="{{ content.claims.title|default:'Stuck with your Claim?' }}" placeholder="Claims section title">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">Subtitle</label>
+                            <input type="text" class="form-control" name="homepage_content[claims][subtitle]"
+                                value="{{ content.claims.subtitle|default:'Get assisted with PadosiAgent Claim Experts' }}" placeholder="Subtitle text">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">Description</label>
+                            <input type="text" class="form-control" name="homepage_content[claims][description]"
+                                value="{{ content.claims.description|default:'Select your insurance type below to find your claim assistance PadosiAgent' }}" placeholder="Description text">
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" name="homepage_content[sections][claim_assistance]" value="1"
+                                {{ (content.sections.claim_assistance|default:true) ? 'checked' : '' }} id="claimToggle">
+                            <label class="form-check-label fw-semibold" for="claimToggle">Show Claims Section on Homepage</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab: Policy Review -->
+        <div class="tab-pane fade" id="tab-review">
+            <div class="card mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 fw-bold"><i class="fa-solid fa-clipboard-list me-2 text-info"></i>Policy Review Section</h6>
+                    <small class="text-muted">Content for the policy audit/review discovery section.</small>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">Title</label>
+                            <input type="text" class="form-control" name="homepage_content[review][title]"
+                                value="{{ content.review.title|default:'Do you have multiple Insurance Policies?' }}" placeholder="Review section title">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">Subtitle</label>
+                            <input type="text" class="form-control" name="homepage_content[review][subtitle]"
+                                value="{{ content.review.subtitle|default:'Get your Portfolio Audited by Expert PadosiAgents' }}" placeholder="Subtitle">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">Description</label>
+                            <input type="text" class="form-control" name="homepage_content[review][description]"
+                                value="{{ content.review.description|default:'PadosiAgent will analyse and identify gaps in your coverage' }}" placeholder="Description">
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" name="homepage_content[sections][policy_review]" value="1"
+                                {{ (content.sections.policy_review|default:true) ? 'checked' : '' }} id="reviewToggle">
+                            <label class="form-check-label fw-semibold" for="reviewToggle">Show Policy Review Section on Homepage</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab: Trust -->
+        <div class="tab-pane fade" id="tab-trust">
+            <div class="card mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 fw-bold"><i class="fa-solid fa-shield-halved me-2 text-success"></i>Why Users Trust Section</h6>
+                    <small class="text-muted">Heading and subtitle for the trust/credibility section.</small>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Title</label>
+                            <input type="text" class="form-control" name="homepage_content[trust][title]"
+                                value="{{ content.trust.title|default:'Why Users Trust their PadosiAgent' }}" placeholder="Trust section title">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Subtitle</label>
+                            <input type="text" class="form-control" name="homepage_content[trust][subtitle]"
+                                value="{{ content.trust.subtitle|default:'The safest way to find your insurance PadosiAgent: No Spam, No Fees, just trusted service for you' }}" placeholder="Trust section subtitle">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab: How it Works -->
+        <div class="tab-pane fade" id="tab-works">
+            <div class="card mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 fw-bold"><i class="fa-solid fa-stairs me-2 text-warning"></i>How It Works Section</h6>
+                    <small class="text-muted">Heading and subtitle for the step-by-step guide section.</small>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Title</label>
+                            <input type="text" class="form-control" name="homepage_content[works][title]"
+                                value="{{ content.works.title|default:'Find My PadosiAgent in 4 Simple Steps' }}" placeholder="How it works title">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Subtitle</label>
+                            <input type="text" class="form-control" name="homepage_content[works][subtitle]"
+                                value="{{ content.works.subtitle|default:'From search to service - it takes just minutes for you' }}" placeholder="How it works subtitle">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab: Visibility -->
+        <div class="tab-pane fade" id="tab-visibility">
+            <div class="card mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 fw-bold"><i class="fa-solid fa-toggle-on me-2"></i>Section Visibility Toggles</h6>
+                    <small class="text-muted">Toggle entire sections on or off from the homepage without deleting content.</small>
+                </div>
+                <div class="card-body">
+                    <div class="row g-4 p-2">
+                        {# PHP Logic omitted during conversion #}
+                        {% for t in toggles %}
+                        <div class="col-md-4">
+                            <div class="card border-0 bg-light p-3 h-100" style="border-radius:12px;">
+                                <div class="d-flex align-items-center gap-3 mb-2">
+                                    <div style="width:40px;height:40px;border-radius:10px;background:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 4px rgba(0,0,0,.08);">
+                                        <i class="fa-solid {{ t.icon }} {{ t.color }}"></i>
+                                    </div>
+                                    <div>
+                                        <div class="fw-semibold" style="font-size:14px;">{{ t.title }}</div>
+                                        <div class="text-muted" style="font-size:12px;">{{ t.desc }}</div>
+                                    </div>
+                                </div>
+                                <div class="form-check form-switch mt-1">
+                                    <input class="form-check-input" type="checkbox" name="homepage_content[sections][{{ t.key }}]" value="1"
+                                        {{ (content.sections[t.key]|default:true) ? 'checked' : '' }} id="sec-{{ t.key }}">
+                                    <label class="form-check-label" for="sec-{{ t.key }}" style="font-size:13px;">Enabled</label>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-end mt-2 mb-5">
+        <button type="submit" class="btn btn-primary btn-lg shadow-sm px-5">
+            <i class="fa-solid fa-save me-2"></i> Save All Updates
+        </button>
+    </div>
+</form>
+{% endblock %}

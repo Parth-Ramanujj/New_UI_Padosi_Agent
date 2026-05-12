@@ -1,0 +1,1 @@
+ALTER TABLE public.agent_analytics ADD COLUMN IF NOT EXISTS card_views integer DEFAULT 0;

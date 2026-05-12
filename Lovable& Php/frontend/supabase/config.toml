@@ -1,0 +1,18 @@
+project_id = "wrindeqewwkxojknsben"
+
+[functions.demo-login]
+verify_jwt = false
+
+[functions.validate-promo-code]
+verify_jwt = false
+
+[functions.capture-lead]
+verify_jwt = false
+
+[functions.track-view]
+verify_jwt = false
+
+[functions.submit-guest-review]
+
+[functions.accept-declarations]
+verify_jwt = false

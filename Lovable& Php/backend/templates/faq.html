@@ -1,0 +1,144 @@
+{% extends 'layouts/app.html' %}
+{% load static %}
+
+
+{% block content %}
+<div class="sub_banner position-relative">
+    {% include 'layouts/header.html' %}
+<!-- Sub banner -->
+    {# PHP Logic omitted during conversion #}
+    <section class="sub_banner_con position-relative">
+        <div class="container position-relative">
+            <div class="row">
+                <div class="col-xl-8 col-lg-9 col-12 mx-auto">
+                    <div class="sub_banner_content" data-aos="fade-up">
+                        <h1 class="text-white">{!! $faq_content['title'] !!}</h1>
+                        <p class="text-white text-size-18">{{ faq_content.subtitle }}</p>                   
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+   <section class="faqpage-con position-relative">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <div class="faq_content text-center" data-aos="fade-up">
+                    <h6>Faq's</h6>
+                    <h2>Frequently Asked Questions</h2>
+                </div>
+            </div>
+        </div>
+        <div class="faq" data-aos="fade-up">
+            <div class="accordian-section-inner position-relative">
+                <div class="accordian-inner">
+                    <div id="faq_accordion1">
+                        <div class="row">
+                            {# PHP Logic omitted during conversion #}
+                            <div class="col-lg-6 col-md-12 col-sm-12 col-12">
+                                {% for i, faq in faqs->take(half).items %}
+                                <div class="accordion-card">
+                                    <div class="card-header" id="heading{{ faq.id }}">
+                                        <a href="#" class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapse{{ faq.id }}" aria-expanded="false" aria-controls="collapse{{ faq.id }}">
+                                            <h4>{{ faq.question }}</h4>
+                                        </a>
+                                    </div>
+                                    <div id="collapse{{ faq.id }}" class="collapse" aria-labelledby="heading{{ faq.id }}" data-parent="#faq_accordion1">
+                                        <div class="card-body">
+                                            <p class="text-size-14 text-left mb-0">{{ faq.answer }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            <div class="col-lg-6 col-md-12 col-sm-12 col-12">
+                                {% for faq in faqs->skip(half) %}
+                                <div class="accordion-card">
+                                    <div class="card-header" id="heading{{ faq.id }}">
+                                        <a href="#" class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapse{{ faq.id }}" aria-expanded="false" aria-controls="collapse{{ faq.id }}">
+                                            <h4>{{ faq.question }}</h4>
+                                        </a>
+                                    </div>
+                                    <div id="collapse{{ faq.id }}" class="collapse" aria-labelledby="heading{{ faq.id }}" data-parent="#faq_accordion1">
+                                        <div class="card-body">
+                                            <p class="text-size-14 text-left mb-0">{{ faq.answer }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+@push('scripts')
+<script>
+    function initHomeSliders() {
+        // Destroy existing carousels if they exist to prevent duplication bugs
+        $('.owl-carousel').trigger('destroy.owl.carousel'); 
+
+        $('.banner-con .owl-carousel').owlCarousel({
+            items: 1,
+            margin: 15,
+            stagePadding: 0,
+            smartSpeed: 450,
+            loop: true,
+            nav: true,
+            autoplay: true,
+            autoplayTimeout: 5000,
+            animateOut: 'fadeOut'
+        })
+        $('.policieslider-con .owl-carousel').owlCarousel({
+            loop: true,
+            margin: 10,
+            responsiveClass: true,
+            responsive: {
+                0: { items: 2, nav: true },
+                600: { items: 2, nav: false },
+                1000: { items: 4, nav: true, loop: true }
+            }
+        })
+
+        $('.need-help-con .owl-carousel').owlCarousel({
+            loop: true, margin: 10, responsiveClass: true,
+            responsive: { 0: { items: 2, nav: true }, 600: { items: 3, nav: false }, 1000: { items: 5, nav: true, loop: true } }
+        })
+
+        $('.policy-review-con .owl-carousel').owlCarousel({
+            loop: true, margin: 10, responsiveClass: true,
+            responsive: { 0: { items: 2, nav: true }, 600: { items: 2, nav: false }, 1000: { items: 3, nav: true, loop: true } }
+        })
+
+        $('.why-choose-con .owl-carousel').owlCarousel({
+            loop: true, margin: 10, responsiveClass: true,
+            responsive: { 0: { items: 2, nav: true }, 600: { items: 3, nav: false }, 1000: { items: 5, nav: true, loop: true } }
+        })
+
+        $('.how-padosi-agent-works-con .owl-carousel').owlCarousel({
+            loop: true, margin: 10, responsiveClass: true,
+            responsive: { 0: { items: 2, nav: true }, 600: { items: 3, nav: false }, 1000: { items: 5, nav: true, loop: true } }
+        })
+    }
+    
+    if (typeof window.faqHtmxListenerAdded === 'undefined') {
+        document.addEventListener('htmx:afterSwap', function(evt) {
+            if(document.querySelector('.banner-con .owl-carousel')) {
+                if (typeof initHomeSliders === 'function') initHomeSliders();
+            }
+        });
+        window.faqHtmxListenerAdded = true;
+    }
+    
+    $(document).ready(function(){
+        initHomeSliders();
+    });
+    
+    initHomeSliders();
+</script>
+@endpush

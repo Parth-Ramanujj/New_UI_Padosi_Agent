@@ -1,0 +1,1 @@
+DROP POLICY "Public can view approved agent profiles" ON public.agent_profiles;
